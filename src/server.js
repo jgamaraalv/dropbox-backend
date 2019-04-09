@@ -3,36 +3,53 @@ const mongoose = require("mongoose");
 const path = require("path");
 const cors = require("cors");
 
-const app = express();
+class App {
+  constructor() {
+    this.express = express();
+    this.server = require("http").Server(this.express);
+    this.io = require("socket.io")(this.server);
 
-app.use(cors());
-
-const server = require("http").Server(app);
-const io = require("socket.io")(server);
-
-io.on("connection", socket => {
-  socket.on("connectRoom", box => {
-    socket.join(box);
-  });
-});
-
-mongoose.connect(
-  "mongodb+srv://omnistack:omni123456@cluster0-2exys.mongodb.net/omnistack?retryWrites=true",
-  {
-    useNewUrlParser: true
+    this.middlewares();
+    this.routes();
   }
-);
 
-app.use((req, res, next) => {
-  req.io = io;
+  middlewares() {
+    this.express.use(cors());
 
-  return next();
-});
+    this.express.use(express.urlencoded({ extended: true }));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use("/files", express.static(path.resolve(__dirname, "..", "tmp")));
+    this.io.on("connection", socket => {
+      socket.on("connectRoom", box => {
+        socket.join(box);
+      });
+    });
 
-app.use(require("./routes"));
+    mongoose.connect(
+      "mongodb+srv://omnistack:omni123456@cluster0-2exys.mongodb.net/omnistack?retryWrites=true",
+      {
+        useNewUrlParser: true
+      }
+    );
 
-server.listen(process.env.PORT || 3333);
+    this.express.use((req, res, next) => {
+      req.io = this.io;
+
+      return next();
+    });
+
+    this.express.use(express.json());
+
+    this.express.use(express.urlencoded({ extended: true }));
+
+    this.express.use(
+      "/files",
+      express.static(path.resolve(__dirname, "..", "tmp"))
+    );
+  }
+
+  routes() {
+    this.express.use(require("./routes"));
+  }
+}
+
+module.exports = new App().express;
