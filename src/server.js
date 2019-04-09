@@ -25,7 +25,9 @@ class App {
     });
 
     mongoose.connect(
-      "mongodb+srv://omnistack:omni123456@cluster0-2exys.mongodb.net/omnistack?retryWrites=true",
+      `mongodb+srv://${process.env.NAME_DB}:${
+        process.env.PASSWORD_DB
+      }@cluster0-2exys.mongodb.net/${process.env.NAME_DB}?retryWrites=true`,
       {
         useNewUrlParser: true
       }
