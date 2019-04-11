@@ -7,7 +7,7 @@ class App {
   constructor() {
     this.express = express();
     this.server = require("http").Server(this.express);
-    this.io = require("socket.io")(this.server);
+    this.io = require("socket.io")(this.server, {origins: '*:*'});
 
     this.middlewares();
     this.routes();
