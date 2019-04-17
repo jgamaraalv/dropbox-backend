@@ -6,6 +6,10 @@ Full application running: https://dropbox-frontend.herokuapp.com/
 
 In the project directory, you can run:
 
+### `yarn install`
+
+Installs the app dependencies.<br>
+
 ### `yarn dev`
 
 Runs the app in the development mode.<br>
